@@ -33,7 +33,7 @@ Before you start, make sure you have the following installed on your computer:
 
 ```bash
 git clone <repository-url>
-cd genai-python
+cd edu-geni-python-cert
 ```
 
 ### Step 2: Create Virtual Environment
