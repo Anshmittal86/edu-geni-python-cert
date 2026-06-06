@@ -12,6 +12,8 @@ A beginner-friendly course project to learn and practice **Generative AI** integ
 - [Running the Examples](#running-the-examples)
 - [API Keys Setup](#api-keys-setup)
 - [Key Concepts](#key-concepts)
+- [Prompting Techniques](#prompting-techniques)
+- [References](#references)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -63,15 +65,22 @@ This will install:
 ## 📁 Project Structure
 
 ```
-genai-python/
-├── main.py                 # Main entry point / starter template
-├── hello-openai.py         # Example: Using OpenAI's GPT model
-├── hello-gemini.py         # Example: Using Google's Gemini model
-├── terminologies.md        # Key AI/ML concepts explained
-├── pyproject.toml          # Project dependencies configuration
-├── .env.example            # Example environment variables template
-├── .env                    # Environment variables (create this - see setup below)
-└── README.md              # This file
+genai-python-cert/
+├── main.py                              # Main entry point / starter template
+├── hello-openai.py                      # Example: Using OpenAI's GPT model
+├── hello-gemini.py                      # Example: Using Google's Gemini model
+├── terminologies.md                     # Key AI/ML concepts explained
+├── pyproject.toml                       # Project dependencies configuration
+├── .env.example                         # Example environment variables template
+├── .env                                 # Environment variables (create this - see setup below)
+├── README.md                            # This file
+└── prompts/                             # Prompting techniques and strategies
+    ├── zero-shot-prompting.py           # Zero-shot prompting examples
+    ├── one-shot-prompting.py            # One-shot prompting examples
+    ├── few-shot-prompting.py            # Few-shot prompting examples
+    ├── cot-prompting.py                 # Chain-of-Thought prompting examples
+    ├── auto-cot-prompting.py            # Automatic Chain-of-Thought examples
+    └── structured-output-prompting.py   # Structured output prompting examples
 ```
 
 ---
@@ -179,7 +188,55 @@ We've compiled important AI/ML terminologies in `terminologies.md`. Key topics i
 
 ---
 
-## 🐛 Troubleshooting
+## � Prompting Techniques
+
+This project includes examples of various prompting strategies in the `prompts/` folder:
+
+### Available Techniques:
+
+1. **Zero-Shot Prompting** - Directly asking the model without examples
+   - File: `zero-shot-prompting.py`
+   - Use when: You want direct answers without prior examples
+
+2. **One-Shot Prompting** - Providing a single example before asking
+   - File: `one-shot-prompting.py`
+   - Use when: One example helps clarify the expected format
+
+3. **Few-Shot Prompting** - Providing multiple examples for better context
+   - File: `few-shot-prompting.py`
+   - Use when: Multiple examples improve model understanding
+
+4. **Chain-of-Thought (CoT) Prompting** - Encouraging step-by-step reasoning
+   - File: `cot-prompting.py`
+   - Use when: Complex problem-solving requires logical steps
+
+5. **Automatic Chain-of-Thought** - Enhanced CoT with automated reasoning
+   - File: `auto-cot-prompting.py`
+   - Use when: Maximizing model reasoning capability
+
+6. **Structured Output Prompting** - Getting responses in specific formats
+   - File: `structured-output-prompting.py`
+   - Use when: You need consistent, parsable output (JSON, CSV, etc.)
+
+---
+
+## 📚 References
+
+### Research Papers
+
+- **[Attention Is All You Need](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)** - The foundational paper introducing the Transformer architecture used in modern LLMs (NeurIPS 2017)
+
+### Visualization & Exploration Tools
+
+- **[TensorFlow Projector](https://projector.tensorflow.org/)** - Visualize high-dimensional vectors and embeddings in 3D space to understand how AI models represent text
+
+### API Compatibility
+
+- **[Google Gemini OpenAI Compatibility](https://ai.google.dev/gemini-api/docs/openai)** - Use Google's Gemini API with OpenAI-compatible code
+
+---
+
+## �🐛 Troubleshooting
 
 ### Issue: `ModuleNotFoundError: No module named 'openai'`
 
