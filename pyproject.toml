@@ -7,5 +7,9 @@ requires-python = ">=3.14"
 dependencies = [
     "dotenv>=0.9.9",
     "openai>=2.41.0",
+    "playsound3>=3.3.1",
     "pydantic>=2.13.4",
+    "requests>=2.34.2",
+    "scipy>=1.17.1",
+    "sounddevice>=0.5.5",
 ]
