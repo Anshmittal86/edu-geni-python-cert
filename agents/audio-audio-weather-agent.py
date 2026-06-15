@@ -1,14 +1,19 @@
+import json
+import requests
+import sounddevice as sd
+import numpy as np
+import wave
+
 from openai import OpenAI
 from pathlib import Path
 from dotenv import load_dotenv
-import json
-import requests
 from playsound3 import playsound
 
 load_dotenv()
 
 client = OpenAI()
 speech_file_path = Path(__file__).parent / "speech.mp3"
+audio_file_path = Path(__file__).parent / "user_audio.wav"
 
 
 def get_weather(city: str) -> str:
@@ -22,6 +27,52 @@ def get_weather(city: str) -> str:
     return "Something is wrong"
 
 #  Structured Output Prompting:- Given Direct Instruction to the model with more than one example and structured response format.
+
+def get_user_speech_input(duration: int = 5, sample_rate: int = 16000) -> str:
+    """ Record audio from microphone and transcribe it using OpenAI's Whisper API.  
+    
+    Args:
+        duration: Duration of recording in seconds (default: 5)
+        sample_rate: sample rate of audio recording (default 16000 HZ)
+        
+    Returns: 
+        Transcribed text from the audio
+    """
+    print("🎙️ Recording.... Speak now (5 seconds)")
+    
+    try:
+        # Record audio from microphone
+        audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype=np.int16)
+        sd.wait()
+        
+        print("🎙️ Recording Complete. Saving audio file...")
+        
+        # Save audio to WAV file
+        with wave.open(str(audio_file_path), 'wb') as wave_file:
+            wave_file.setnchannels(1)
+            wave_file.setsampwidth(2)
+            wave_file.setframerate(sample_rate)
+            wave_file.writeframes(audio_data.tobytes())
+        
+        print(f"🎙️ Audio saved to {audio_file_path}")
+        print("🎙️ Transcribing audio...")
+        
+        # Transcribe audio to text using Whisper API
+        with open(audio_file_path, 'rb') as audio_file:
+            transcribe = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                language="en"
+            )
+        
+        user_input = transcribe.text
+        print(f"👤 Transcribed: {user_input}")
+        
+        return user_input
+        
+    except Exception as e:
+        print(f"❌ Error during speech input: {str(e)}")
+        return ""
 
 available_tools = {
     'get_weather': get_weather
@@ -88,7 +139,7 @@ message_history = [
 ]
 
 while True:
-    user_query = input("👤: ")
+    user_query = get_user_speech_input()
     message_history.append({ 'role': 'user', 'content': user_query })
 
     while True:
