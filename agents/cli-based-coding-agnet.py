@@ -1,81 +1,80 @@
-import json
-import requests
-import sounddevice as sd
-import numpy as np
-import wave
-
 from openai import OpenAI
-from pathlib import Path
 from dotenv import load_dotenv
-from playsound3 import playsound
+import json
+import os
+import subprocess
 
 load_dotenv()
 
 client = OpenAI()
-speech_file_path = Path(__file__).parent / "speech.mp3"
-audio_file_path = Path(__file__).parent / "user_audio.wav"
 
+def read_file(file_path: str) -> str:
+    """ Reads the content of the file at the given path."""
+    print(f"Tool Called: read_file, {file_path}")
+    
+    try:
+        with open(file_path, 'r') as f:
+            return f.read()
+    except Exception as e:
+        return f"Error reading file: {str(e)}"
 
-def get_weather(city: str) -> str:
-    url = f'https://wttr.in/{city}?format=%C+%t'
+def write_file(input_json: str) -> str:
+    """ write the content of the file."""
+    print(f"Tool called: write_file {repr(input_json[:200])}...")
     
-    response = requests.get(url)
+    try:
+        params = json.loads(input_json)
+    except json.JSONDecodeError as e:
+        return f"⚔️ JSON Error: {str(e)[:100]}. Input is invalid."
     
-    if response.status_code == 200:
-        return f"The current weather of {city} is {response.text}"
+    file_path = params.get('file_path', 'File path not found')
+    content = params.get('content', 'Content not found')
     
-    return "Something is wrong"
+    if file_path or content is None:
+        return '⚔️ Missing file_path and content in params'
+    
+    try:
+        with open(file_path, 'w') as f:
+            f.write(content)
+            return f"✅ File Written Successfully."
+        
+    except Exception as e:
+        return f"⚔️ Write Error: {str(e)}"
+
+def list_directory(dir_path: str = ".") -> str:
+    """Lists files and directories in the given path."""
+    print(f"Tool called: list_directory, {dir_path}")
+    
+    try:
+        items = os.listdir(dir_path)
+        return "\n".join(items)
+    except Exception as e:
+        return f"Error Listing Directory: {str(e)}"
+
+def run_shell(input_json: str) -> str:
+    print(f'🔨 Tool Called: run_shell {json.loads(input_json)["cmd"]}')
+    
+    params = json.loads(input_json)
+    cmd = params.get('cmd', 'not found')
+    
+    try:
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        output = result.stdout + result.stderr
+    
+        return f"Exit code: {result.returncode} \n Output: {output}"
+    except subprocess.TimeoutExpired:
+        return "Command Timed out"
+    
+    except Exception as e:
+        return f"Error running command: {str(e)}"
 
 #  Structured Output Prompting:- Given Direct Instruction to the model with more than one example and structured response format.
 
-def get_user_speech_input(duration: int = 5, sample_rate: int = 16000) -> str:
-    """ Record audio from microphone and transcribe it using OpenAI's Whisper API.  
-    
-    Args:
-        duration: Duration of recording in seconds (default: 5)
-        sample_rate: sample rate of audio recording (default 16000 HZ)
-        
-    Returns: 
-        Transcribed text from the audio
-    """
-    print("🎙️ Recording.... Speak now (5 seconds)")
-    
-    try:
-        # Record audio from microphone
-        audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype=np.int16)
-        sd.wait()
-        
-        print("🎙️ Recording Complete. Saving audio file...")
-        
-        # Save audio to WAV file
-        with wave.open(str(audio_file_path), 'wb') as wave_file:
-            wave_file.setnchannels(1)
-            wave_file.setsampwidth(2)
-            wave_file.setframerate(sample_rate)
-            wave_file.writeframes(audio_data.tobytes())
-        
-        print(f"🎙️ Audio saved to {audio_file_path}")
-        print("🎙️ Transcribing audio...")
-        
-        # Transcribe audio to text using Whisper API
-        with open(audio_file_path, 'rb') as audio_file:
-            transcribe = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                language="en"
-            )
-        
-        user_input = transcribe.text
-        print(f"👤 Transcribed: {user_input}")
-        
-        return user_input
-        
-    except Exception as e:
-        print(f"❌ Error during speech input: {str(e)}")
-        return ""
-
 available_tools = {
-    'get_weather': get_weather
+    'read_file': read_file,
+    'write_file': write_file,
+    'list_directory': list_directory,
+    'run_shell': run_shell
 }
 
 SYSTEM_PROMPT = """
@@ -101,7 +100,10 @@ SYSTEM_PROMPT = """
     }
     
     Available Tools:
-    - get_weather(city: str): Takes a city name as an input and returns the current weather for the city
+    - read_file(file_path: str): Reads content from a file
+    - list_directory(dir_path: str): lists files in directory
+    - write_file(input_json: str): {'file_path': 'file.py', 'content': 'code here' }
+    - run_shell(input_jsonL str): { 'cmd': 'ls', 'cwd': '.' }
     
     Example:- 
     
@@ -139,7 +141,7 @@ message_history = [
 ]
 
 while True:
-    user_query = get_user_speech_input()
+    user_query = input("👤: ")
     message_history.append({ 'role': 'user', 'content': user_query })
 
     while True:
@@ -177,16 +179,9 @@ while True:
                 continue
         
         if parsed_result.get('step') == 'OUTPUT':
-            
-            with client.audio.speech.with_streaming_response.create(
-                model="gpt-4o-mini-tts",
-                voice="marin",
-                input=parsed_result.get('content'),
-                instructions="Speak like weather forecaster.",
-            ) as response:
-                response.stream_to_file(speech_file_path)
-                
-            playsound('./speech.mp3')
-    
             print(f"🤖: {parsed_result.get('content')}")
             break
+
+
+
+
