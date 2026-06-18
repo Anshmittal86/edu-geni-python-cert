@@ -60,6 +60,21 @@ This will install:
 - `openai` - For OpenAI API integration
 - `python-dotenv` - For managing environment variables
 
+### Step 4: Docker Setup (Optional - for RAG module)
+
+If you want to use the RAG (Retrieval-Augmented Generation) features, start the Docker containers:
+
+```bash
+cd rag
+docker compose up -d
+```
+
+This will start the necessary services for the RAG module. To stop the services:
+
+```bash
+docker compose down
+```
+
 ---
 
 ## 📁 Project Structure
@@ -74,6 +89,28 @@ genai-python-cert/
 ├── .env.example                         # Example environment variables template
 ├── .env                                 # Environment variables (create this - see setup below)
 ├── README.md                            # This file
+├── agents/                              # AI agents implementations
+│   ├── weather-agent.py                 # Weather agent example
+│   ├── weather-agent-pydantic.py        # Weather agent with Pydantic
+│   ├── audio-audio-weather-agent.py     # Audio-based weather agent
+│   ├── cli-based-coding-agnet.py        # CLI-based coding agent
+│   └── web_search.py                    # Web search agent
+├── openai-method/                       # OpenAI-specific methods
+│   ├── function-calling.py              # Function calling examples
+│   └── open-sdk-tool-calling.py         # OpenAI SDK tool calling
+├── pydantic/                            # Pydantic data validation examples
+│   ├── 01_basics.py                     # Pydantic basics
+│   ├── 02_default_value.py              # Default values in Pydantic
+│   ├── 03_typing_with_pydantic.py       # Type hints with Pydantic
+│   └── 04_field_validation.py           # Field validation examples
+├── rag/                                 # Retrieval-Augmented Generation
+│   ├── docker-compose.yml               # Docker Compose for RAG services
+│   ├── pdf-loader.py                    # PDF loading and processing
+│   └── retrieve.py                      # Retrieval examples
+├── responses-api/                       # Responses API examples
+│   └── hello-openai.py                  # OpenAI API response example
+├── streaming/                           # Streaming responses
+│   └── stream-openai.py                 # OpenAI streaming example
 └── prompts/                             # Prompting techniques and strategies
     ├── zero-shot-prompting.py           # Zero-shot prompting examples
     ├── one-shot-prompting.py            # One-shot prompting examples
