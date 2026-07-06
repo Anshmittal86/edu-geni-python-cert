@@ -7,7 +7,6 @@ load_dotenv()
 agent = create_agent(model='gpt-4o-mini')
 
 # agent.invoke('hello how are you')
-
 user_query = input("Question: ")
 
 result = agent.invoke({
