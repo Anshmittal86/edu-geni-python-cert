@@ -13,6 +13,7 @@ dependencies = [
     "langchain-qdrant>=1.1.0",
     "langchain-text-splitters>=1.1.2",
     "langchain[agents,openai]>=1.3.11",
+    "langgraph>=1.2.6",
     "openai>=2.41.0",
     "openai-agents>=0.17.5",
     "playsound3>=3.3.1",
