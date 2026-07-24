@@ -11,9 +11,17 @@
 **Python**
 
 ```bash
+# python
 mkdir mcp-practice && cd mcp-practice
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install "mcp[cli]"
+```
+
+```bash
+# uv
+mkdir mcp-practice && cd mcp-practice
+uv venv   # Windows: .venv\Scripts\activate
+uv add "mcp[cli]"
 ```
 
 **TypeScript**
@@ -27,7 +35,12 @@ npm install @modelcontextprotocol/sdk zod
 **Launch the Inspector** (Node 18+ required; no install needed):
 
 ```bash
+# python
 npx @modelcontextprotocol/inspector python server.py
+
+# uv
+npx @modelcontextprotocol/inspector uv run server.py
+
 # or
 npx @modelcontextprotocol/inspector node build/server.js
 ```
