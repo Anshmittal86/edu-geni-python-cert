@@ -2,7 +2,7 @@
 from mcp.server.fastmcp import FastMCP
 
 # Initialize FastMCP server
-mcp = FastMCP('my-server')
+mcp = FastMCP('calculator')
 
 @mcp.tool()
 def add(a: float, b: float) -> float:
@@ -11,18 +11,18 @@ def add(a: float, b: float) -> float:
 
 @mcp.tool()
 def subtract(a: float, b: float) -> float:
-    """Add a and b"""
+    """Subtract b from a"""
     return a - b
 
 @mcp.tool()
 def multiply(a: float, b: float) -> float:
-    """Add a and b"""
+    """Multiply a and b"""
     return a * b
 
 @mcp.tool()
 def division(a: float, b: float) -> float:
-    """Add a and b"""
+    """Divide a by b"""
     return a / b
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="stdio")
